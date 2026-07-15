@@ -5,7 +5,9 @@ on:
   pull_request:
   push:
     branches:
-      - "main"
+      - "sps-test-main"
+  schedule:
+    - cron: "10 4 * * 1-5"
 
 jobs:
   # JOB to run change detection
