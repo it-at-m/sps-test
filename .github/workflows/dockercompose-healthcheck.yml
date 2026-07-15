@@ -3,6 +3,9 @@ name: dockercompose-healthcheck
 
 on:
   pull_request:
+  schedule:
+    - cron: "30 4 * * 1-5"
+      timezone: "Europe/Berlin"
 
 jobs:
   dockercompose-healthcheck:

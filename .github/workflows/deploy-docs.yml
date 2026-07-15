@@ -5,7 +5,7 @@ on:
   # Runs on pushes to any branch when changes are made to docs or workflow
   push:
     branches:
-      - main
+      - sps-test-main
     paths:
       - "docs/**"
       - ".github/workflows/deploy-docs.yml"
@@ -13,6 +13,9 @@ on:
     paths:
       - "docs/**"
       - ".github/workflows/deploy-docs.yml"
+  schedule:
+    - cron: "25 4 * * 1-5"
+      timezone: "Europe/Berlin"
 
 jobs:
   deploy-docs:

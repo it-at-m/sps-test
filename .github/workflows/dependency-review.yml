@@ -5,6 +5,8 @@ on:
   pull_request:
   schedule:
     - cron: "20 4 * * 1-5"
+      timezone: "Europe/Berlin"
+
 jobs:
   dependency-review:
     runs-on: ubuntu-latest

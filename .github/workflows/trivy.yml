@@ -5,6 +5,7 @@ on:
   pull_request:
   schedule:
     - cron: '0 3 * * *' # Daily at 03:00 UTC
+      timezone: "Europe/Berlin"
 
 jobs:
   trivy:

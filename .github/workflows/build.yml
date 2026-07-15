@@ -8,6 +8,7 @@ on:
       - "sps-test-main"
   schedule:
     - cron: "10 4 * * 1-5"
+      timezone: "Europe/Berlin"
 
 jobs:
   # JOB to run change detection

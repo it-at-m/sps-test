@@ -20,7 +20,10 @@ on:
         options: # Add or modify paths according to your project structure
           - frontend
           - webcomponent
-          
+  schedule:
+    - cron: '30 5 * * 1-5'
+      timezone: "America/New_York"
+
 jobs:
   release-npm-artifact:
     runs-on: ubuntu-latest

@@ -19,6 +19,7 @@ on:
       - "sps-test-main"
   schedule:
     - cron: "15 4 * * 1-5"
+      timezone: "Europe/Berlin"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
