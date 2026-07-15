@@ -5,6 +5,7 @@ on:
   pull_request:
   schedule:
     - cron: "5 4 * * 1-5"
+      timezone: "Europe/Berlin"
 
 jobs:
   actionlint:
