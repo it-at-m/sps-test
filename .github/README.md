@@ -23,28 +23,28 @@
 [made-with-love-shield]: https://img.shields.io/badge/made%20with%20%E2%9D%A4%20by-it%40M-yellow?style=for-the-badge
 [license-shield]: https://img.shields.io/github/license/it-at-m/sps-test?style=for-the-badge
 
-# SPS Test (fork von RefArch Templates)
+# SPS Test (a fork of RefArch Templates)
 
 [![Documentation][documentation-shield]][documentation]
 [![New issue][new-issue-shield]][new-issue]
 [![Made with love by it@M][made-with-love-shield]][itm-opensource]
 [![GitHub license][license-shield]][license]
 
-This project if a fork forked from it-at-m/refarch-templates. It is named SPS which is an abbreviation for **S**oftware**p**roduktions**s**traße - 
+This project if a fork forked of [it-at-m/refarch-templates][refarch-templates]. It is named SPS which is an abbreviation for **S**oftware**p**roduktions**s**traße - 
 it@m internally used for their CI/CD Pipelines and everything what's going with it.
 
 sps-test is  used to test it@m's GitHub Actions implemented in repository [it-at-m/lhm_actions][lhm_actions] 
-and Refarch template workflows implemented in repository [it-at-m/refarch-templates][refarch-templates].
+and RefArch template workflows implemented in repository [it-at-m/refarch-templates][refarch-templates].
 
 ## Usage
 This project isn't intended for external usage.
 
-If you want to setup and learn more about the Refarch templates, please check out the [Getting Started][getting-started-documentation] page.
+If you want to setup and learn more about the RefArch templates, please check out the [Getting Started][getting-started-documentation] page.
 Also check the respective pages with suggestions on how to [develop][develop-documentation], [document][document-documentation] and [organize][organize-documentation] your project.
 
 ## Roadmap
 
-To get a better overview on what's currently being worked on it@m's GitHub Actions and Refarch Templates Workflows,
+To get a better overview on what's currently being worked on it@m's GitHub Actions and RefArch Templates Workflows,
 check out our [project board][project-board].
 
 ## Contributing
