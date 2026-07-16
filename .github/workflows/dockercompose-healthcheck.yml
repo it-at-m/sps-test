@@ -17,3 +17,15 @@ jobs:
         with:
           skip-exited: true # required for keycloakmigration init container
           compose-file-path: "./stack/"
+
+  handlefailure:
+    needs:
+      - dockercompose-healthcheck
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Notify Webex
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{"markdown" : "${{ github.server_url }}/${{ github.repository }} ${{ github.workflow }} failed"}' \
+            "https://webexapis.com/v1/webhooks/incoming/${{ secrets.WEBEX_TOKEN }}"

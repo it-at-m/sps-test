@@ -79,3 +79,17 @@ jobs:
         with:
           artifact-name: ${{ needs.release-npm-artifact.outputs.ARTIFACT_NAME }}
           tag-name: ${{ inputs.app-path }}-${{ needs.release-npm-artifact.outputs.ARTIFACT_VERSION }}
+
+  handlefailure:
+    needs:
+      - release-npm-artifact
+      - release-npm-image
+      - release-npm-github
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Notify Webex
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{"markdown" : "${{ github.server_url }}/${{ github.repository }} ${{ github.workflow }} failed"}' \
+            "https://webexapis.com/v1/webhooks/incoming/${{ secrets.WEBEX_TOKEN }}"

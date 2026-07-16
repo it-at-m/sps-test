@@ -15,3 +15,15 @@ jobs:
       pull-requests: write
     steps:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-dependency-review@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
+
+  handlefailure:
+    needs:
+      - dependency-review
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Notify Webex
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{"markdown" : "${{ github.server_url }}/${{ github.repository }} ${{ github.workflow }} failed"}' \
+            "https://webexapis.com/v1/webhooks/incoming/${{ secrets.WEBEX_TOKEN }}"

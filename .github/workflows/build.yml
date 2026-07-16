@@ -80,3 +80,16 @@ jobs:
           registry-username: ${{ github.actor }}
           image-tags: |
             type=raw,value=dev
+
+  handlefailure:
+    needs:
+      - changes
+      - build
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Notify Webex
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{"markdown" : "${{ github.server_url }}/${{ github.repository }} ${{ github.workflow }} failed"}' \
+            "https://webexapis.com/v1/webhooks/incoming/${{ secrets.WEBEX_TOKEN }}"

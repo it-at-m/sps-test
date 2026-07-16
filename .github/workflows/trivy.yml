@@ -39,7 +39,7 @@ jobs:
           eai: eai/**
     - run: |
         echo ${{ toJSON(steps.filter.outputs.changes) }}
-        
+
   # JOB to find out modified packages
   trivy-partial:
     needs: changes
@@ -54,3 +54,17 @@ jobs:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-trivy@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
         with:
           path: ${{ matrix.package }}
+
+  handlefailure:
+    needs:
+      - trivy
+      - changes
+      - trivy-partial
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Notify Webex
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{"markdown" : "${{ github.server_url }}/${{ github.repository }} ${{ github.workflow }} failed"}' \
+            "https://webexapis.com/v1/webhooks/incoming/${{ secrets.WEBEX_TOKEN }}"

@@ -91,3 +91,18 @@ jobs:
         with:
           codeql-language: python
           codeql-query: ${{ env.analysis-query }}
+
+  handlefailure:
+    needs:
+      - codeql-check-changed-files
+      - codeql-java
+      - codeql-javascript-typescript-vue
+      - codeql-python
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Notify Webex
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{"markdown" : "${{ github.server_url }}/${{ github.repository }} ${{ github.workflow }} failed"}' \
+            "https://webexapis.com/v1/webhooks/incoming/${{ secrets.WEBEX_TOKEN }}"
