@@ -22,7 +22,7 @@ on:
           - webcomponent
   schedule:
     - cron: '30 5 * * 1-5'
-      timezone: "America/New_York"
+      timezone: "Europe/Berlin"
 
 jobs:
   release-npm-artifact:
@@ -38,13 +38,13 @@ jobs:
       - id: release-npm-artifact
         uses: it-at-m/lhm_actions/action-templates/actions/action-npm-release@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
         with:
-          app-path: ${{ inputs.app-path }}
-          releaseVersion: ${{ inputs.release-version }}
+          app-path: ${{ inputs.app-path || 'frontend' }}
+          releaseVersion: ${{ inputs.release-version || 'patch' }}
           use-pr: "true"
       - id: build
         uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
         with:
-          app-path: ${{ inputs.app-path }}
+          app-path: ${{ inputs.app-path || 'frontend' }}
       # necessary to publish to npm registry
       # docs: https://it-at-m.github.io/lhm_actions/workflows.html#npm
       # - id: publish
@@ -60,8 +60,8 @@ jobs:
     steps:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
         with:
-          path: ${{ inputs.app-path }}
-          image-name: ${{ inputs.app-path }}
+          path: ${{ inputs.app-path || 'frontend' }}
+          image-name: ${{ inputs.app-path || 'frontend' }}
           artifact-name: ${{ needs.release-npm-artifact.outputs.ARTIFACT_NAME }}
           registry-password: ${{ secrets.GITHUB_TOKEN }}
           registry-username: ${{ github.actor }}
@@ -78,7 +78,7 @@ jobs:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-create-github-release@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
         with:
           artifact-name: ${{ needs.release-npm-artifact.outputs.ARTIFACT_NAME }}
-          tag-name: ${{ inputs.app-path }}-${{ needs.release-npm-artifact.outputs.ARTIFACT_VERSION }}
+          tag-name: ${{ inputs.app-path || 'frontend' }}-${{ needs.release-npm-artifact.outputs.ARTIFACT_VERSION }}
 
   handlefailure:
     needs:
