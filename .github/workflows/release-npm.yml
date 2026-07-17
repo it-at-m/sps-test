@@ -24,6 +24,10 @@ on:
     - cron: '30 5 * * 1-5'
       timezone: "Europe/Berlin"
 
+env:
+  DEFAULT_APP_PATH: 'frontend'
+  DEFAULT_RELEASE_VERSION: 'patch'
+
 jobs:
   release-npm-artifact:
     runs-on: ubuntu-latest
@@ -38,18 +42,18 @@ jobs:
       - id: release-npm-artifact
         uses: it-at-m/lhm_actions/action-templates/actions/action-npm-release@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
         with:
-          app-path: ${{ inputs.app-path || 'frontend' }}
-          releaseVersion: ${{ inputs.release-version || 'patch' }}
+          app-path: ${{ inputs.app-path || env.DEFAULT_APP_PATH }}
+          releaseVersion: ${{ inputs.release-version || env.DEFAULT_RELEASE_VERSION }}
           use-pr: "true"
       - id: build
         uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
         with:
-          app-path: ${{ inputs.app-path || 'frontend' }}
+          app-path: ${{ inputs.app-path || env.DEFAULT_APP_PATH }}
       # necessary to publish to npm registry
       # docs: https://it-at-m.github.io/lhm_actions/workflows.html#npm
       # - id: publish
       #   shell: bash
-      #   working-directory: ./${{ inputs.app-path }}
+      #   working-directory: ./${{ inputs.app-path || env.env.DEFAULT_APP_PATH }}
       #   run: npm publish --provenance --access public
 
   release-npm-image:
@@ -60,8 +64,8 @@ jobs:
     steps:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
         with:
-          path: ${{ inputs.app-path || 'frontend' }}
-          image-name: ${{ inputs.app-path || 'frontend' }}
+          path: ${{ inputs.app-path || env.DEFAULT_APP_PATH }}
+          image-name: ${{ inputs.app-path || env.DEFAULT_APP_PATH }}
           artifact-name: ${{ needs.release-npm-artifact.outputs.ARTIFACT_NAME }}
           registry-password: ${{ secrets.GITHUB_TOKEN }}
           registry-username: ${{ github.actor }}
@@ -78,7 +82,7 @@ jobs:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-create-github-release@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
         with:
           artifact-name: ${{ needs.release-npm-artifact.outputs.ARTIFACT_NAME }}
-          tag-name: ${{ inputs.app-path || 'frontend' }}-${{ needs.release-npm-artifact.outputs.ARTIFACT_VERSION }}
+          tag-name: ${{ inputs.app-path || env.DEFAULT_APP_PATH }}-${{ needs.release-npm-artifact.outputs.ARTIFACT_VERSION }}
 
   handlefailure:
     needs:
