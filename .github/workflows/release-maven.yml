@@ -23,6 +23,11 @@ on:
     - cron: "40 4 * * 1-5"
       timezone: "Europe/Berlin"
 
+env:
+  DEFAULT_RELEASE_VERSION: "0.0.1"
+  DEFAULT_DEVELOPMENT_VERSION: "0.0.2-SNAPSHOT"
+  DEFAULT_APP_PATH: "app-path"
+
 jobs:
   release-maven-artifact:
     runs-on: ubuntu-latest
@@ -38,9 +43,9 @@ jobs:
       - id: release-maven-artifact
         uses: it-at-m/lhm_actions/action-templates/actions/action-maven-release@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
         with:
-          app-path: ${{ github.event.inputs.app-path }}
-          releaseVersion: ${{ github.event.inputs.releaseVersion }}
-          developmentVersion: ${{ github.event.inputs.developmentVersion }}
+          app-path: ${{ github.event.inputs.app-path || env.DEFAULT_APP_PATH }}
+          releaseVersion: ${{ github.event.inputs.releaseVersion || env.DEFAULT_RELEASE_VERSION }}
+          developmentVersion: ${{ github.event.inputs.developmentVersion || env.DEFAULT_DEVELOPMENT_VERSION }}
           use-pr: "true"
           # the following variables are necessary to publish the packages to maven central
           # docs: https://it-at-m.github.io/lhm_actions/workflows.html#maven-central
@@ -57,13 +62,13 @@ jobs:
     steps:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
         with:
-          path: ${{ github.event.inputs.app-path }}
-          image-name: ${{ github.event.inputs.app-path }}
+          path: ${{ github.event.inputs.app-path || env.DEFAULT_APP_PATH }}
+          image-name: ${{ github.event.inputs.app-path || env.DEFAULT_APP_PATH }}
           registry-password: ${{ secrets.GITHUB_TOKEN }}
           artifact-name: ${{ needs.release-maven-artifact.outputs.ARTIFACT_NAME }}
           registry-username: ${{ github.actor }}
           image-tags: |
-            type=semver,pattern={{version}},value=${{ github.event.inputs.releaseVersion }}
+            type=semver,pattern={{version}},value=${{ github.event.inputs.releaseVersion || env.DEFAULT_RELEASE_VERSION }}
             type=raw,value=latest
 
   release-maven-github:
@@ -75,8 +80,8 @@ jobs:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-create-github-release@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
         with:
           artifact-name: ${{ needs.release-maven-artifact.outputs.ARTIFACT_NAME }}
-          tag-name: ${{ inputs.app-path }}-${{ github.event.inputs.releaseVersion }}
-          artifact-path: ${{ github.event.inputs.app-path }}/target/*.jar
+          tag-name: ${{ inputs.app-path || env.DEFAULT_APP_PATH }}-${{ github.event.inputs.releaseVersion || env.DEFAULT_RELEASE_VERSION }}
+          artifact-path: ${{ github.event.inputs.app-path || env.DEFAULT_APP_PATH }}/target/*.jar
 
   handlefailure:
     needs:
