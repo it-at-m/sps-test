@@ -90,6 +90,7 @@ jobs:
       - release-npm-image
       - release-npm-github
     runs-on: ubuntu-latest
+    permissions: {}
     if: failure() && (github.event_name == 'schedule' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
     steps:
       - name: Notify Webex
