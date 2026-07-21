@@ -21,8 +21,6 @@ jobs:
       # Expose matched filters as job 'packages' output variable
       packages: ${{ steps.filter.outputs.changes }}
     steps:
-    - run: |
-       exit 1
     - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
     # For pull requests it's not necessary to checkout the code
     - uses: it-at-m/lhm_actions/action-templates/actions/action-filter@798bbf171750a308ece31e0ee7257b766888ccdc # v1.2.2
@@ -88,7 +86,7 @@ jobs:
       - changes
       - build
     runs-on: ubuntu-latest
-    if: failure() && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    if: failure() && (github.event_name == 'schedule' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
     steps:
       - name: Notify Webex
         run: |
