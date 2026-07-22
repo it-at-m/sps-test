@@ -24,7 +24,6 @@ on:
       timezone: "Europe/Berlin"
 
 env:
-  DEFAULT_RELEASE_VERSION: "0.0.1"
   DEFAULT_RELEASE_VERSION: "0.0.3"
   DEFAULT_DEVELOPMENT_VERSION: "0.0.4-SNAPSHOT"
   DEFAULT_APP_PATH: "backend"
