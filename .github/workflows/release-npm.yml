@@ -81,7 +81,7 @@ jobs:
     steps:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-create-github-release@4ed8f906bab8111fbd9a7af8e3f4129f9b721757 # v1.2.3
         with:
-          tag-name: ${{ inputs.app-path }}-${{ needs.release-npm-artifact.outputs.ARTIFACT_VERSION }}
+          tag-name: ${{ inputs.app-path || env.DEFAULT_APP_PATH }}-${{ needs.release-npm-artifact.outputs.ARTIFACT_VERSION }}
           generate-release-notes: true
 
   handlefailure:
