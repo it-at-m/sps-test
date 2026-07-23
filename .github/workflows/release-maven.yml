@@ -24,8 +24,8 @@ on:
       timezone: "Europe/Berlin"
 
 env:
-  DEFAULT_RELEASE_VERSION: "0.0.1"
-  DEFAULT_DEVELOPMENT_VERSION: "0.0.2-SNAPSHOT"
+  DEFAULT_RELEASE_VERSION: "0.0.3"
+  DEFAULT_DEVELOPMENT_VERSION: "0.0.4-SNAPSHOT"
   DEFAULT_APP_PATH: "backend"
 
 jobs:
@@ -80,9 +80,9 @@ jobs:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-create-github-release@4ed8f906bab8111fbd9a7af8e3f4129f9b721757 # v1.2.3
         with:
           artifact-name: ${{ needs.release-maven-artifact.outputs.ARTIFACT_NAME }}
-          tag-name: ${{ inputs.app-path }}-${{ github.event.inputs.releaseVersion }}
+          tag-name: ${{ inputs.app-path || env.DEFAULT_APP_PATH }}-${{ github.event.inputs.releaseVersion || env.DEFAULT_RELEASE_VERSION }}
           generate-release-notes: true
-          artifact-path: ${{ github.event.inputs.app-path }}/target/*.jar
+          artifact-path: ${{ github.event.inputs.app-path || env.DEFAULT_APP_PATH }}/target/*.jar
 
   handlefailure:
     needs:
