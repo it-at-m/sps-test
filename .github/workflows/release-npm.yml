@@ -20,7 +20,14 @@ on:
         options: # Add or modify paths according to your project structure
           - frontend
           - webcomponent
-          
+  schedule:
+    - cron: '30 5 * * 1-5'
+      timezone: "Europe/Berlin"
+
+env:
+  DEFAULT_APP_PATH: 'frontend'
+  DEFAULT_RELEASE_VERSION: 'patch'
+
 jobs:
   release-npm-artifact:
     runs-on: ubuntu-latest
@@ -35,18 +42,18 @@ jobs:
       - id: release-npm-artifact
         uses: it-at-m/lhm_actions/action-templates/actions/action-npm-release@4ed8f906bab8111fbd9a7af8e3f4129f9b721757 # v1.2.3
         with:
-          app-path: ${{ inputs.app-path }}
-          releaseVersion: ${{ inputs.release-version }}
+          app-path: ${{ inputs.app-path || env.DEFAULT_APP_PATH }}
+          releaseVersion: ${{ inputs.release-version || env.DEFAULT_RELEASE_VERSION }}
           use-pr: "true"
       - id: build
         uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@4ed8f906bab8111fbd9a7af8e3f4129f9b721757 # v1.2.3
         with:
-          app-path: ${{ inputs.app-path }}
+          app-path: ${{ inputs.app-path || env.DEFAULT_APP_PATH }}
       # necessary to publish to npm registry
       # docs: https://it-at-m.github.io/lhm_actions/workflows.html#npm
       # - id: publish
       #   shell: bash
-      #   working-directory: ./${{ inputs.app-path }}
+      #   working-directory: ./${{ inputs.app-path || env.env.DEFAULT_APP_PATH }}
       #   run: npm publish --provenance --access public
 
   release-npm-image:
@@ -57,8 +64,8 @@ jobs:
     steps:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@4ed8f906bab8111fbd9a7af8e3f4129f9b721757 # v1.2.3
         with:
-          path: ${{ inputs.app-path }}
-          image-name: ${{ inputs.app-path }}
+          path: ${{ inputs.app-path || env.DEFAULT_APP_PATH }}
+          image-name: ${{ inputs.app-path || env.DEFAULT_APP_PATH }}
           artifact-name: ${{ needs.release-npm-artifact.outputs.ARTIFACT_NAME }}
           registry-password: ${{ secrets.GITHUB_TOKEN }}
           registry-username: ${{ github.actor }}
@@ -74,6 +81,20 @@ jobs:
     steps:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-create-github-release@4ed8f906bab8111fbd9a7af8e3f4129f9b721757 # v1.2.3
         with:
-          artifact-name: ${{ needs.release-npm-artifact.outputs.ARTIFACT_NAME }}
-          tag-name: ${{ inputs.app-path }}-${{ needs.release-npm-artifact.outputs.ARTIFACT_VERSION }}
+          tag-name: ${{ inputs.app-path || env.DEFAULT_APP_PATH }}-${{ needs.release-npm-artifact.outputs.ARTIFACT_VERSION }}
           generate-release-notes: true
+
+  handlefailure:
+    needs:
+      - release-npm-artifact
+      - release-npm-image
+      - release-npm-github
+    runs-on: ubuntu-latest
+    permissions: {}
+    if: failure() && (github.event_name == 'schedule' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
+    steps:
+      - name: Notify Webex
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{"markdown" : "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} ${{ github.workflow }} failed"}' \
+            "https://webexapis.com/v1/webhooks/incoming/${{ secrets.WEBEX_TOKEN }}"
