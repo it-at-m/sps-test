@@ -16,7 +16,10 @@ on:
   pull_request:
   push:
     branches:
-      - "main" # Runs on main in order to keep the regular scanning by GitHub working
+      - "sps-test-main"
+  schedule:
+    - cron: "15 4 * * 1-5"
+      timezone: "Europe/Berlin"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -88,3 +91,19 @@ jobs:
         with:
           codeql-language: python
           codeql-query: ${{ env.analysis-query }}
+
+  handlefailure:
+    needs:
+      - codeql-check-changed-files
+      - codeql-java
+      - codeql-javascript-typescript-vue
+      - codeql-python
+    runs-on: ubuntu-latest
+    permissions: {}
+    if: failure() && (github.event_name == 'schedule' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
+    steps:
+      - name: Notify Webex
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{"markdown" : "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} ${{ github.workflow }} failed"}' \
+            "https://webexapis.com/v1/webhooks/incoming/${{ secrets.WEBEX_TOKEN }}"
