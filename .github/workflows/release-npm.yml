@@ -84,6 +84,7 @@ jobs:
           tag-name: ${{ inputs.app-path || env.DEFAULT_APP_PATH }}-${{ needs.release-npm-artifact.outputs.ARTIFACT_VERSION }}
           generate-release-notes: true
           artifact-name: ${{ needs.release-npm-artifact.outputs.ARTIFACT_NAME }}
+          artifact-path: ${{ needs.release-npm-artifact.outputs.ARTIFACT_NAME }}.zip
 
   handlefailure:
     needs:
